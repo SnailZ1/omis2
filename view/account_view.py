@@ -9,11 +9,11 @@ class AccountView(tk.Frame):
 
         # Список счетов
         self.accounts = [
-            {"account_number": "123456789", "cards": [
+            {"account_number": "123456789", "bank": "Банк A", "cards": [
                 {"name": "Иван Иванов", "card_number": "1234 5678 9012 3456", "expiry": "12/24", "balance": 5000},
                 {"name": "Мария Петрова", "card_number": "1234 5678 9012 3456", "expiry": "08/23", "balance": 1500},
             ]},
-            {"account_number": "987654321", "cards": [
+            {"account_number": "987654321", "bank": "Банк B", "cards": [
                 {"name": "Сергей Сидоров", "card_number": "9876 5432 1098 7654", "expiry": "06/25", "balance": 1200},
             ]}
         ]
@@ -70,12 +70,15 @@ class AccountView(tk.Frame):
         account_label = tk.Label(account_frame, text=f"Номер счета: {account['account_number']}", font=("Arial", 14), fg="white", bg="#0056b3")
         account_label.grid(row=0, column=0, sticky="w", pady=5)
 
+        bank_label = tk.Label(account_frame, text=f"Банк: {account.get('bank', 'Не указан')}", font=("Arial", 12), fg="white", bg="#0056b3")
+        bank_label.grid(row=1, column=0, sticky="w", pady=5)
+
         # Кнопка "Добавить карту"
         add_card_button = tk.Button(account_frame, text="Добавить карту", font=("Arial", 10), command=lambda: self.open_add_card_window(account))
-        add_card_button.grid(row=1, column=0, pady=5, sticky="w")
+        add_card_button.grid(row=2, column=0, pady=5, sticky="w")
 
         # Отображение карт
-        card_row = 2
+        card_row = 3
         card_column = 0
         for card in account['cards']:
             self.create_card_widget(account_frame, card, card_row, card_column)
@@ -107,16 +110,27 @@ class AccountView(tk.Frame):
         """Открывает окно добавления счета"""
         add_account_window = tk.Toplevel(self)
         add_account_window.title("Добавить счет")
-        add_account_window.geometry("300x200")
+        add_account_window.geometry("300x250")
 
         tk.Label(add_account_window, text="Номер счета:", font=("Arial", 12)).pack(pady=5)
         account_number_entry = tk.Entry(add_account_window, font=("Arial", 12))
         account_number_entry.pack(pady=5)
 
+        tk.Label(add_account_window, text="Выберите банк:", font=("Arial", 12)).pack(pady=5)
+
+        # Список предложенных банков
+        bank_options = ["Банк A", "Банк B", "Банк C"]
+        selected_bank = tk.StringVar(add_account_window)
+        selected_bank.set(bank_options[0])  # Значение по умолчанию
+
+        bank_menu = tk.OptionMenu(add_account_window, selected_bank, *bank_options)
+        bank_menu.pack(pady=5)
+
         def add_account():
             account_number = account_number_entry.get()
+            bank = selected_bank.get()
             if account_number:
-                self.accounts.append({"account_number": account_number, "cards": []})
+                self.accounts.append({"account_number": account_number, "bank": bank, "cards": []})
                 self.create_widgets()
                 add_account_window.destroy()
             else:

@@ -30,6 +30,13 @@ class PaymentView(tk.Frame):
         self.operation_menu = tk.OptionMenu(self, self.operation_var, *operation_options)
         self.operation_menu.pack(pady=10)
 
+        # Поле ввода для номера счета или карты
+        self.account_label = tk.Label(self, text="Введите номер счета или карты", font=("Arial", 10))
+        self.account_label.pack(pady=5)
+
+        self.account_entry = tk.Entry(self, font=("Arial", 10))
+        self.account_entry.pack(pady=5)
+
         # Поле ввода для суммы
         self.amount_label = tk.Label(self, text="Введите сумму", font=("Arial", 10))
         self.amount_label.pack(pady=5)
@@ -49,7 +56,13 @@ class PaymentView(tk.Frame):
     def execute_payment(self):
         """Обработчик выполнения платежа"""
         operation_type = self.operation_var.get()
+        account_number = self.account_entry.get()
         amount = self.amount_entry.get()
+
+        # Проверка, что номер счета или карты введен
+        if not account_number:
+            self.result_label.config(text="Ошибка: Введите номер счета или карты", fg="red")
+            return
 
         # Проверка, что сумма введена корректно
         if not amount.isdigit():
@@ -57,5 +70,5 @@ class PaymentView(tk.Frame):
             return
 
         # Обновление текста результата
-        result_text = f"Операция: {operation_type}\nСумма: {amount} Br"
+        result_text = f"Операция: {operation_type}\nНомер счета/карты: {account_number}\nСумма: {amount} Br"
         self.result_label.config(text=result_text, fg="green")
